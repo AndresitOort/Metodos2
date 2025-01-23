@@ -1,8 +1,4 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-import sympy as sym
-import math
+
 
 archivo = 'C:\\Users\\david\\OneDrive\\Documentos\\Universidad\\Programas\\Metodos2\\Metodos2\\Punto 1\\Datos\\Rhodium.csv'
 Wavelenght = pd.read_csv(archivo)['Wavelength (pm)'].tolist()
