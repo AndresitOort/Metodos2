@@ -4,7 +4,7 @@ import numpy as np
 import sympy as sym
 import math
 
-archivo = 'C:\\Users\\david\\OneDrive\\Documentos\\Universidad\\Programas\\Metodos2\\Metodos2\\Punto 1\\Datos\\Rhodium.csv'
+archivo = 'Rhodium.csv'
 Wavelenght = pd.read_csv(archivo)['Wavelength (pm)'].tolist()
 Intensity = pd.read_csv(archivo)['Intensity (mJy)'].tolist()
 
@@ -23,7 +23,7 @@ def delete_wdata(list,promd):
     newdata = []
     newwave = []
     
-    prom = 1.8*promd
+    prom = promd
     
     for i in range(1,len(list)):
         if abs(list[i] - list[i-1]) <= prom:
@@ -31,6 +31,8 @@ def delete_wdata(list,promd):
             newwave.append(Wavelenght[i-1])
         elif abs(list[i] - list[i-1]) > prom:
             if abs(list[i+1]-list[i]) <= prom:
+                newdata.append(list[i-2])
+                newwave.append(Wavelenght[i-2])
                 newdata.append(list[i])
                 newwave.append(Wavelenght[i])
             
@@ -38,8 +40,23 @@ def delete_wdata(list,promd):
 
 IntensityN, WavelenghtN = delete_wdata(Intensity,promdel)
 
-plt.scatter(WavelenghtN,IntensityN,color='r',label='Scatter')
+'''plt.scatter(WavelenghtN,IntensityN,color='r',label='Scatter')
+plt.scatter(Wavelenght,Intensity,color='b',label='Scatter',marker='x')
+
 plt.plot(WavelenghtN,IntensityN,color='m',label='Scatter')
 plt.legend()
+plt.grid()
+plt.show()'''
+
+diferencias=[]
+for i in range(1,len(Intensity)):
+    diferencias.append(np.abs(Intensity[i]-Intensity[i-1]))
+
+Wavelenght.pop(0)
+
+
+
+plt.scatter(Wavelenght,diferencias)
+plt.axhline(promdel,color='r')
 plt.grid()
 plt.show()
