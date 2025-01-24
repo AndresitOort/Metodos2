@@ -19,7 +19,7 @@ def prom_in_list(list):
 
     return promdel
 
-def sublists(list, sub_size = 10):
+def sublists(list, sub_size = 6):
     sublist = []
     for i in range(0, len(list), sub_size):
         sublist.append(list[i:i + sub_size])
@@ -30,7 +30,7 @@ def delete_wdata(list,compl_list):
     compl_listsb = sublists(compl_list)
     
     for i in range(len(listsb)):
-        psl = 1.8*prom_in_list(listsb[i])
+        psl = 1.896*prom_in_list(listsb[i])
         newdat = []
         newcompl = []
         for j in range(1,len(listsb[i])):
