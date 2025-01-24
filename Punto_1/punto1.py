@@ -8,45 +8,63 @@ archivo = 'Rhodium.csv'
 Wavelenght = pd.read_csv(archivo)['Wavelength (pm)'].tolist()
 Intensity = pd.read_csv(archivo)['Intensity (mJy)'].tolist()
 
-promdel = 0
+def prom_in_list(list):
+    promdel = 0
 
-for i in range(len(Intensity)-1):
-    delt = np.abs(Intensity[i+1] - Intensity[i])
+    for i in range(len(list)-1):
+        delt = np.abs(list[i+1] - list[i])
+        promdel += delt
     
-    promdel += delt
+    promdel /= len(list)-1 
+
+    return promdel
+
+def sublists(list, sub_size = 10):
+    sublist = []
+    for i in range(0, len(list), sub_size):
+        sublist.append(list[i:i + sub_size])
+    return sublist
+
+def delete_wdata(list,compl_list):
+    listsb = sublists(list)
+    compl_listsb = sublists(compl_list)
     
-promdel = promdel/len(Intensity)
-
-print(promdel)
-
-def delete_wdata(list,promd):
-    newdata = []
-    newwave = []
+    for i in range(len(listsb)):
+        psl = 1.8*prom_in_list(listsb[i])
+        newdat = []
+        newcompl = []
+        for j in range(1,len(listsb[i])):
+            if abs(listsb[i][j] - listsb[i][j-1]) <= psl:
+                newdat.append(listsb[i][j-1])
+                newcompl.append(compl_listsb[i][j-1])
+            if j == len(listsb[i])-1 and abs(listsb[i][j] - listsb[i][j-1]) <= psl:
+                newdat.append(listsb[i][j])
+                newcompl.append(compl_listsb[i][j])
+        listsb[i]=newdat
+        compl_listsb[i] = newcompl
+    mergedlist = []
+    mergedcompl = []
+    for sub in listsb:
+        mergedlist.extend(sub)
+    for sub in compl_listsb:
+        mergedcompl.extend(sub)
+        
+    print(len(mergedlist),len(mergedcompl))
     
-    prom = promd
+    return mergedlist, mergedcompl
     
-    for i in range(1,len(list)):
-        if abs(list[i] - list[i-1]) <= prom:
-            newdata.append(list[i-1])
-            newwave.append(Wavelenght[i-1])
-        elif abs(list[i] - list[i-1]) > prom:
-            if abs(list[i+1]-list[i]) <= prom:
-                newdata.append(list[i-2])
-                newwave.append(Wavelenght[i-2])
-                newdata.append(list[i])
-                newwave.append(Wavelenght[i])
-            
-    return newdata, newwave
+IntensityN, WavelenghtN = delete_wdata(Intensity,Wavelenght)
 
-IntensityN, WavelenghtN = delete_wdata(Intensity,promdel)
 
-'''plt.scatter(WavelenghtN,IntensityN,color='r',label='Scatter')
+
+
+plt.scatter(WavelenghtN,IntensityN,color='r',label='Scatter')
 plt.scatter(Wavelenght,Intensity,color='b',label='Scatter',marker='x')
 
 plt.plot(WavelenghtN,IntensityN,color='m',label='Scatter')
 plt.legend()
 plt.grid()
-plt.show()'''
+plt.show()
 
 diferencias=[]
 for i in range(1,len(Intensity)):
@@ -54,7 +72,7 @@ for i in range(1,len(Intensity)):
 
 Wavelenght.pop(0)
 
-
+promdel = prom_in_list(Intensity)
 
 plt.scatter(Wavelenght,diferencias)
 plt.axhline(promdel,color='r')
