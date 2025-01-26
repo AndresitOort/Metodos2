@@ -51,7 +51,7 @@ def delete_wdata(list,compl_list):
         
     #print(len(mergedlist),len(mergedcompl))
     
-    return mergedlist, mergedcompl
+    return np.array(mergedlist), np.array(mergedcompl)
 
 # Punto 1.b)
 
@@ -71,25 +71,41 @@ def polinomio_lagrange(X_s,Y_s,x): # Creamos una función que nos admita una var
         polinomio_sum += Y_s[n]*polinomio_Lagrange # Almacenamos la sumatoria de cada uno de los Polinomios de Lagrange
         polinomio_Lagrange = 1 # Reiniciamos la variable para calcular una nueva base.
     
-    #polinomio_sum = sym.simplify(polinomio_sum)
+    polinomio_sum = sym.simplify(polinomio_sum)
     
     return polinomio_sum
 
-x = sym.symbols('x',real=True)
 IntensityN, WavelenghtN = delete_wdata(Intensity,Wavelenght)
-polinomio_interpolado = polinomio_lagrange(np.array(WavelenghtN),np.array(IntensityN),x)
-print(polinomio_interpolado)
+
+def derivative(domain,codomine):
+    der_value = []
+    
+    for i in range(len(domain)-5):
+        m = (codomine[i+5]-codomine[i])/(domain[i+5]-domain[i])
+        der_value.append(m)
+    
+    return der_value
+        
 #plt.scatter(WavelenghtN,IntensityN,color='m')
 #plt.show()
 
-#plt.scatter(WavelenghtN,IntensityN,color='r',label='Scatter')
-'''plt.scatter(Wavelenght,Intensity,color='b',label='Original')
 
-plt.plot(WavelenghtN,IntensityN,color='m',label='Scatter')
+der = derivative(WavelenghtN,IntensityN)
+
+plt.scatter(WavelenghtN[:-5],der,color='r',label='derivada')
+plt.plot(WavelenghtN,IntensityN,color='m',label='Modelo')
 plt.legend()
 plt.grid()
 plt.show()
 
+'''plt.scatter(WavelenghtN,IntensityN,color='r',label='Scatter')
+plt.scatter(Wavelenght,Intensity,color='b',label='Original')
+
+plt.plot(WavelenghtN,IntensityN,color='m',label='Scatter')
+plt.legend()
+plt.grid()
+plt.show()'''
+'''
 diferencias=[]
 for i in range(1,len(Intensity)):
     diferencias.append(np.abs(Intensity[i]-Intensity[i-1]))
