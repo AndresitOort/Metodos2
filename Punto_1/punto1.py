@@ -49,17 +49,41 @@ def delete_wdata(list,compl_list):
     for sub in compl_listsb:
         mergedcompl.extend(sub)
         
-    print(len(mergedlist),len(mergedcompl))
+    #print(len(mergedlist),len(mergedcompl))
     
     return mergedlist, mergedcompl
+
+# Punto 1.b)
+
+def polinomio_lagrange(X_s,Y_s,x): # Creamos una función que nos admita una variable que usaremos como un symbol,
+    # y un conjunto soporte definido por (X_s,Y_s) que van a ser los puntos por los cuales pase el polinomio que interpolemos.
+    # Debemos crear una variable que almacene la suma de todos los polinomios de Lagrange.
+    # Creamos también una variable que almacene el polinomio de Lagrange que, recordemos, es una productoria.
     
+    
+    polinomio_sum = np.float64(0)
+    polinomio_Lagrange = np.float64(1)
+    
+    for n in range(len(X_s)): # El índice n lo usamos para calcular el Polinomio L_n de la base de lagrange.
+        for i in range(len(X_s)): # El índice i lo usamos para recorrer cada elemento del conjunto soporte X_s.
+            if i != n: # Para la base L_n del polinomio de Lagrange, preguntamos si X_s[i] != X_s[n]
+                polinomio_Lagrange *= (x-X_s[i])/(X_s[n]-X_s[i]) # Calculamos la base de Lagrange con la Productoria al rededor de X_s[n]
+        polinomio_sum += Y_s[n]*polinomio_Lagrange # Almacenamos la sumatoria de cada uno de los Polinomios de Lagrange
+        polinomio_Lagrange = 1 # Reiniciamos la variable para calcular una nueva base.
+    
+    #polinomio_sum = sym.simplify(polinomio_sum)
+    
+    return polinomio_sum
+
+x = sym.symbols('x',real=True)
 IntensityN, WavelenghtN = delete_wdata(Intensity,Wavelenght)
+polinomio_interpolado = polinomio_lagrange(np.array(WavelenghtN),np.array(IntensityN),x)
+print(polinomio_interpolado)
+#plt.scatter(WavelenghtN,IntensityN,color='m')
+#plt.show()
 
-
-
-
-plt.scatter(WavelenghtN,IntensityN,color='r',label='Scatter')
-plt.scatter(Wavelenght,Intensity,color='b',label='Scatter',marker='x')
+#plt.scatter(WavelenghtN,IntensityN,color='r',label='Scatter')
+'''plt.scatter(Wavelenght,Intensity,color='b',label='Original')
 
 plt.plot(WavelenghtN,IntensityN,color='m',label='Scatter')
 plt.legend()
@@ -78,3 +102,4 @@ plt.scatter(Wavelenght,diferencias)
 plt.axhline(promdel,color='r')
 plt.grid()
 plt.show()
+'''
