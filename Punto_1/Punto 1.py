@@ -2,6 +2,8 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 
+from scipy.optimize import curve_fit
+
 csv_file = 'Rhodium.csv'
 
 x_data = []
@@ -45,6 +47,7 @@ x_limpio, y_limpio = filtrar_por_ventanas(x, y, ventana=6, umbral=3.)
 plt.figure(figsize=(10, 6))
 plt.plot(x, y, 'o-', color='b', alpha=0.5, label='Datos Originales')
 plt.plot(x_limpio, y_limpio, 'o-', color='r', label='Datos Filtrados (Ventanas MAD)')
+plt.plot(x_limpio,newfit,'o-',color='m', label = 'Ajuste')
 plt.xlabel('Wavelength (pm)')
 plt.ylabel('Intensity')
 plt.title('Rhodium Data Plot - Limpieza con Ventanas MAD')
