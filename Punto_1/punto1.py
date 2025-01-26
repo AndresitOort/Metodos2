@@ -91,9 +91,20 @@ def derivative(domain,codomine):
 
 
 der = derivative(WavelenghtN,IntensityN)
+newder = []
+newint = []
+WavelenghtNN = []
+for i in range(len(der)):
+    if abs(der[i]) <= 0.008 and IntensityN[i] <= 0.12:
+        newder.append(der[i])
+        newint.append(IntensityN[i])
+        WavelenghtNN.append(WavelenghtN[i])
+        
 
-plt.scatter(WavelenghtN[:-5],der,color='r',label='derivada')
-plt.plot(WavelenghtN,IntensityN,color='m',label='Modelo')
+plt.plot(WavelenghtNN,newder,color='b')
+plt.scatter(WavelenghtNN,newint,color='r')
+#plt.scatter(WavelenghtN[:-5],newint,color='r',label='derivada')
+#plt.plot(WavelenghtN,IntensityN,color='m',label='Modelo')
 plt.legend()
 plt.grid()
 plt.show()
