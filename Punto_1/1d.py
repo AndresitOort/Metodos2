@@ -24,16 +24,22 @@ def polinomio_lagrange(x,X_s,Y_s): # Creamos una función que nos admita una var
     Lagrange = sym.lambdify([x],Lagrange,'numpy')
     return polinomio_sum 
 
+def radiacion_fondo(x,C=29342324535.280624,B=-1365711523.2963758,T=-3865343.8688157196):
+    return C * (x**(-5)) * (1 / (np.exp(B / (x * T)) - 1))
+    
 def Energia_total_Radiada(espectro_fondo,ventanas = 10):
     
-    intervalo = int(300/ventanas)
-    Roots, Weights = np.polynomial.legendre.leggauss(5)
-    area_total = 0
-    for i in range(ventanas):
-        inf = i*intervalo
-        sup = (i+1)*intervalo
-        t = 0.5*( (sup-inf)*Roots + sup + inf)
-        Integral = 0.5*(sup-inf)*np.sum(Weights*espectro_fondo(t))
-        area_total += Integral    
+    Roots, Weights = np.polynomial.legendre.leggauss(6)
+    t = 0.5*( (300)*Roots+300)
+    Integral = 0.5*(300)*np.sum(Weights*espectro_fondo(t))   
     
-    return area_total
+    return 'La energía total radiada corresponde a ({} +/- {}) eV/nm'.format(round(Integral,1),round(Integral*0.02,1))
+
+x = np.linspace(0,300,500)
+funcion_radiacion_fondo = radiacion_fondo(x,29342324535.280624,-1365711523.2963758,-3865343.8688157196)
+energia = Energia_total_Radiada(radiacion_fondo)
+print(energia)
+'''plt.plot(x,funcion_radiacion_fondo,color ='m',label = 'Modelo Radiación de Fondo')
+plt.grid()
+plt.legend()
+plt.show()'''

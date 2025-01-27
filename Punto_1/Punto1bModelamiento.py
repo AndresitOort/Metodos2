@@ -38,7 +38,7 @@ def modelo_combinado(x, C, B, T):
 
 def procesar_espectro(x, y):
 
-    popt, _ = curve_fit(modelo_combinado, x, y, p0=(1, 1, 300), maxfev=50000)
+    popt, _ = curve_fit(modelo_combinado, x, y, p0=(3, 3, 300), maxfev=50000)
     fondo_combinado = modelo_combinado(x, *popt)
     isolated_peaks = y - fondo_combinado
     plt.figure(figsize=(10, 6))
