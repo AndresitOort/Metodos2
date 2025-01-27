@@ -2,7 +2,7 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 
-csv_file = 'Punto_1\Data\Rhodium.csv'
+csv_file = '/Users/andresitoortiz/Library/Mobile Documents/com~apple~CloudDocs/Pregrado FISI/2025-01/Métodos Computacionales II/Metodos2/Punto_1/Rhodium.csv'
 
 x_data = []
 y_data = []
