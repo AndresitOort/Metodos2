@@ -88,7 +88,7 @@ def areaentrecurvas(B,H):
 
     return sum
 
-area = areaentrecurvas(a[1],a[2])
+area = round(areaentrecurvas(a[1],a[2]),3)
 print(f'La energia perdida fue de {area} Joules')
 path1 = 'C:\\Users\\david\\OneDrive\\Documentos\\Universidad\\Programas\\Metodos2\\Metodos2\\Punto_2\\histérico.pdf'
 path2 = 'C:\\Users\\david\\OneDrive\\Documentos\\Universidad\\Programas\\Metodos2\\Metodos2\\Punto_2\\energy.pdf'
