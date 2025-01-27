@@ -8,7 +8,7 @@ import time
 from scipy.optimize import curve_fit
 from matplotlib.backends.backend_pdf import PdfPages
 
-ruta = 'Punto_2\\hysteresis.dat'
+ruta = 'Punto_2/hysteresis.dat'
 def leer_datos(ruta)->tuple:
     archivo = open(ruta,'r')
     t = []
@@ -88,8 +88,8 @@ def areaentrecurvas(B,H):
 
     return sum
 
-area = round(areaentrecurvas(a[1],a[2]),3)
-print(f'La energia perdida fue de {area} Joules')
+area = round(areaentrecurvas(a[2],a[1]),3)
+print(f'La energia perdida fue de {area}x10^-3 Joules')
 path1 = 'C:\\Users\\david\\OneDrive\\Documentos\\Universidad\\Programas\\Metodos2\\Metodos2\\Punto_2\\histérico.pdf'
 path2 = 'C:\\Users\\david\\OneDrive\\Documentos\\Universidad\\Programas\\Metodos2\\Metodos2\\Punto_2\\energy.pdf'
 
