@@ -97,7 +97,7 @@ pdf = PdfPages(path1)
 
 plt.figure(figsize=(10, 6))
 plt.scatter(a[0],a[1], color='r',label = f'{frecuencia} Hz')
-plt.plot(a[0],fit_sinu)
+plt.plot(a[0],fit_sinu,label='Ajuste sinusoidal')
 plt.title('B vs t')
 plt.xlabel('t (s)')
 plt.ylabel('B')
