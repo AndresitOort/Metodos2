@@ -58,3 +58,16 @@ fondo, picos, parametros, ecuacion = procesar_espectro(x_limpio, y_limpio)
 
 print(f'Parámetros ajustados: C={parametros[0]}, B={parametros[1]}, T={parametros[2]}')
 print(f'Ecuación ajustada: {ecuacion}')
+
+peaks_indices, properties= find_peaks(y, height=0)
+sorted_peaks = np.sort(properties['peak_heights'])
+#Escoger los primeros 3
+max = sorted_peaks[-3:]
+max_y = max[::2]
+print(max_y)
+max_x = []
+for i in peaks_indices:
+    if (y[i] == max_y[0]) or (y[i] == max_y[1]):
+        max_x.append(x[i])
+
+#print(max(picos))
