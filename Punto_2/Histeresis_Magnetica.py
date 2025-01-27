@@ -90,8 +90,8 @@ def areaentrecurvas(B,H):
 
 area = round(areaentrecurvas(a[2],a[1]),3)
 print(f'La energia perdida fue de {area}x10^-3 Joules')
-path1 = 'C:\\Users\\david\\OneDrive\\Documentos\\Universidad\\Programas\\Metodos2\\Metodos2\\Punto_2\\histérico.pdf'
-path2 = 'C:\\Users\\david\\OneDrive\\Documentos\\Universidad\\Programas\\Metodos2\\Metodos2\\Punto_2\\energy.pdf'
+path1 = 'Punto_2\\histérico.pdf'
+path2 = 'Punto_2\\energy.pdf'
 
 pdf = PdfPages(path1)
 
