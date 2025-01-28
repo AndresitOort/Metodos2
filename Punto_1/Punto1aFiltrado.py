@@ -2,7 +2,7 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 
-csv_file = 'Punto_1\Rhodium.csv'
+csv_file = 'Punto_1\\Rhodium.csv'
 x_data = []
 y_data = []
 
@@ -36,12 +36,12 @@ def filtrar_por_ventanas(x, y, ventana=5, umbral=5):
         if robust_z <= umbral:
             x_limpio.append(x[i])
             y_limpio.append(y[i])
-    
-    return np.array(x_limpio), np.array(y_limpio)
+    num_eliminados = len(y) - len(y_limpio)
+    return np.array(x_limpio), np.array(y_limpio), num_eliminados
 
-x_limpio, y_limpio = filtrar_por_ventanas(x, y, ventana=6, umbral=3.)
+x_limpio, y_limpio, eliminados = filtrar_por_ventanas(x, y, ventana=6, umbral=3.)
 
-
+print(f"1.a) Número de datos eliminados: {eliminados}")
 
 # plt.figure(figsize=(10, 6))
 # plt.plot(x, y, 'o-', color='b', alpha=0.5, label='Datos Originales')
