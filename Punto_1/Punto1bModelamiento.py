@@ -58,6 +58,7 @@ fondo, picos, parametros, ecuacion = procesar_espectro(x_limpio, y_limpio)
 
 print(f'Parámetros ajustados: C={parametros[0]}, B={parametros[1]}, T={parametros[2]}')
 print(f'Ecuación ajustada: {ecuacion}')
+print("1.b) Método: Resto modelo de señal fondo.")
 
 peaks_indices, properties= find_peaks(picos, height=0)
 sorted_peaks = np.sort(properties['peak_heights'])
