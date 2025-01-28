@@ -60,14 +60,15 @@ print(f'Parámetros ajustados: C={parametros[0]}, B={parametros[1]}, T={parametr
 print(f'Ecuación ajustada: {ecuacion}')
 print("1.b) Método: Resto un modelo de señal fondo.")
 
-peaks_indices, properties= find_peaks(y, height=0)
+peaks_indices, properties= find_peaks(picos, height=0)
 sorted_peaks = np.sort(properties['peak_heights'])
 #Escoger los primeros 3
 max = sorted_peaks[-3:]
 max_y = max[::2]
-max_x = []
-for i in peaks_indices:
-    if (y[i] == max_y[0]) or (y[i] == max_y[1]):
-        max_x.append(x[i])
 
+indices = []
+for i in peaks_indices:
+    if (picos[i] == max_y[0]) or (picos[i] == max_y[1]):
+        indices.append(i)
+print(indices)
 #print(max(picos))
