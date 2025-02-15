@@ -34,9 +34,14 @@ amplitud = np.abs(fourier)
 
 #Cogemos la frecuencia más representativa (Se ve que es la unica mayor que 100):
 picos, info = find_peaks(amplitud, height= 100)
-print(frecuencias[picos])
+frec_real = frecuencias[picos]
 
-plt.plot(frecuencias, amplitud)
-plt.scatter(frecuencias[picos], info["peak_heights"], color="red")
+#Ploteamos los módulos de cada punto:
+modulos = np.mod(frec_real*t, 1)
+
+
+#plt.plot(frecuencias, amplitud)
+#plt.scatter(frecuencias[picos], info["peak_heights"], color="red")
+plt.scatter(t, modulos)
 plt.grid(True)
 plt.show()
