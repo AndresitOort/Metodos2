@@ -39,9 +39,11 @@ frec_real = frecuencias[picos]
 #Ploteamos los módulos de cada punto:
 modulos = np.mod(frec_real*t, 1)
 
-
-#plt.plot(frecuencias, amplitud)
-#plt.scatter(frecuencias[picos], info["peak_heights"], color="red")
-plt.scatter(t, modulos)
+#Identificamos lo especial de esta frecuencias. Si bien para cada dato hay un pequeño desfase, a diferencia de una frecuencia
+#que no es representativa, aqui si se empaquetan en una misma figura,.
+plt.scatter(modulos, h, s=5, color="green")
+plt.title("2.a")
+plt.xlabel(r"Fase Transformada General $\phi$")
+plt.ylabel("Campo Magnético H")
 plt.grid(True)
 plt.show()
