@@ -122,3 +122,35 @@ print('El ajuste de la gráfica 1.b fue: 0.181*exp(-0.0536t) + 0.00735')
 
 #Punto 1.c)
 
+from scipy.signal import find_peaks
+import random
+archivo = "OGLE-LMC-CEP-0001.dat"
+tiempo=[]
+intensidad=[]
+incertidumbre=[]
+#Leo el archivo
+with open(archivo, "r") as file:
+    for linea in file:
+        # Evitar líneas vacías o comentarios (si las hay)
+        if linea.strip() and not linea.startswith("#"):  # Omite líneas vacías o que comienzan con '#'
+            # Separar la línea por espacios (o puedes usar .split() si los valores están separados por espacios o tabuladores)
+            datos = linea.split()
+            if len(datos) >= 2:  # Asegurarse de que haya al menos dos columnas
+                # Convertir las primeras dos columnas a tipo numérico
+                tiempo.append(float(datos[0]))
+                intensidad.append(float(datos[1]))
+                incertidumbre.append(float(datos[1]))
+                
+                
+promedio=np.mean(intensidad)
+intensidad_=np.array([i-promedio for i in intensidad])
+frecuencias_grafica_1c=np.linspace(0.01, 5,1000)
+transformada_1c=(np.array([Fourier(tiempo,intensidad_,f) for f in frecuencias_grafica_1c]))
+
+
+
+max=np.argmin(transformada_1c)
+print("1.c) f Nyquist: 0.35 MHz")
+print(f'La frecuencia de muestreo fue:{3.2592150167545757}')
+
+
