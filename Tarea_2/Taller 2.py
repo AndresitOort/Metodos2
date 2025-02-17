@@ -188,16 +188,7 @@ frec_real_implemented = f_list[indice_frec_real]
 print(frec_real_implemented)
 modulos_ft_implemented = np.mod(frec_real_implemented*t, 1)
 
-#Ploteamos
-        #Identificamos lo especial de esta frecuencias. Si bien para cada dato hay un pequeño desfase, a diferencia de una frecuencia
-        #que no es representativa, aqui si se empaquetan en una misma figura.
-plt.scatter(modulos_fft, h, s=4, color="green")
-plt.scatter(modulos_ft_implemented, h, s = 5, color="black")
-plt.title("2.a")
-plt.xlabel(r"Fase Transformada General $\phi$")
-plt.ylabel("Campo Magnético H")
-plt.grid(True)
-plt.show()
+
 
 #------------------------------------------------------------------ Punto 2b
 #Leemos y limpiamos el archivo
