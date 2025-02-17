@@ -29,17 +29,18 @@ index_picos, info = find_peaks(amplitud, height= 100)
 frec_real = frecuencias[index_picos]
 
 #Encontramos los módulos de cada punto:
-modulos = np.mod(frec_real*t, 1)
+modulos_fft = np.mod(frec_real*t, 1)
 
 #Ploteamos
         #Identificamos lo especial de esta frecuencias. Si bien para cada dato hay un pequeño desfase, a diferencia de una frecuencia
         #que no es representativa, aqui si se empaquetan en una misma figura.
-#plt.scatter(modulos, h, s=5, color="green")
-#plt.title("2.a")
-#plt.xlabel(r"Fase Transformada General $\phi$")
-#plt.ylabel("Campo Magnético H")
-#plt.grid(True)
-#plt.show()
+plt.scatter(modulos_fft, h, s=1, color="green")
+plt.scatter(modulos_fft, h, s=1, color="black")
+plt.title("2.a")
+plt.xlabel(r"Fase Transformada General $\phi$")
+plt.ylabel("Campo Magnético H")
+plt.grid(True)
+plt.show()
 
 #------------------------------------------------------------------ Punto 2b
 #Leemos y limpiamos el archivo
@@ -70,11 +71,13 @@ y_pico_2b = info_2b["peak_heights"][0]
 
 mods = np.mod(frec_real_2b*t_2b, 1)
 T = 1/frec_real_2b
-plt.scatter(mods, manchas, s=0.5)
-plt.xlabel(r"Fase $\phi$")
-plt.ylabel(r"Número Manchas")
-plt.title(f"Empaquetado con T = {round(T)} dias")
-plt.show()
+#Graficamos
+
+#plt.scatter(mods, manchas, s=0.5)
+#plt.xlabel(r"Fase $\phi$")
+#plt.ylabel(r"Número Manchas")
+#plt.title(f"Empaquetado con T = {round(T)} dias")
+#plt.show()
 
 print(f'2.b.a) P_solar = {T} dias')
 
