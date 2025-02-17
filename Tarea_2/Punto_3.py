@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #Cargar datos
-manchas_sol = np.loadtxt("Tarea_2\H_field.csv", skiprows=1, delimiter=",")
+manchas_sol = np.loadtxt(r"Tarea_2\H_field.csv", skiprows=1, delimiter=",")
 manchas_sol = manchas_sol[:,1]
 fft_signal = np.fft.fft(manchas_sol) #transformada de furier rapida
 freq = np.fft.fftfreq(len(fft_signal)) #Fracuencias para cada punto
@@ -42,7 +42,7 @@ for i, alpha in enumerate(alphas):
 #---------------------------------------------------------------------IMAGENES------------------------------------------------
 
 #cargar imegen como array
-catto = plt.imread("Tarea_2\catto.png")
+catto = plt.imread(r"Tarea_2\catto.png")
 
 # Se reliso la ransfiormada de furier y luego se cwentraron la frecuencias para asi identificiar patrones que sean repetitibos par asi
 # eliminar este ruido. Para esta imagen ajustamos dos iagonales una abajo y otra arriba y tambien empleamos una elimpce para protejer datos de frecuencias
@@ -109,7 +109,7 @@ img_filtrada, espectro_filtrado, diagonal_mask = aplicar_notch_filter_catto(catt
 
 #IMAGEN 2
 
-casttle = plt.imread("Tarea_2\Noisy_Smithsonian_Castle.jpg")
+casttle = plt.imread(r"Tarea_2\Noisy_Smithsonian_Castle.jpg")
 
 def notch_filter_casttle(shape, pos_izq, pos_der, pos_sup, pos_inf, width, value=0, a=20, b=9000):
     rows, cols = shape[:2]
