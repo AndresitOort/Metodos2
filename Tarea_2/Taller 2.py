@@ -1,28 +1,8 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from numpy.typing import NDArray
-
-#Funciones a utilizar
 
 
-def datos_prueba(t_max:float, dt:float, amplitudes:NDArray[float],
-  frecuencias:NDArray[float], ruido:float=0.0) -> NDArray[float]:
-  ts = np.arange(0.,t_max,dt)
-  ys = np.zeros_like(ts,dtype=float)
-  for A,f in zip(amplitudes,frecuencias):
-    ys += A*np.sin(2*np.pi*f*ts)
-  ys += np.random.normal(loc=0,size=len(ys),scale=ruido) if ruido else 0
-  return ts,ys
 
 
-def Fourier(t:NDArray[float], y:NDArray[float], f:float) -> complex:
-  FFT=0
-  FFT = np.sum(np.array([a*np.exp((-2*np.pi*f*p)*1j) for a,p in zip(y,t)]))
-  #FFT=np.sum(((y* np.exp((-2*np.pi*f*t)*1j))))
-  return FFT
-
-
-#Punto 1.a)
+#1a---------------------------------------------------------------------------------
 
 t_max=15
 d_t=0.1
@@ -43,7 +23,7 @@ transformada_con_ruido = np.array([Fourier(ts_con_ruido, ys_con_ruido, f) for f 
 print('1.a) Aparecen frecuencias que no son de la señal original.')
 
 
-#Punto 1.b)
+#1b---------------------------------------------------------------------------------------------------
 
 def FWHM(inicio, x, y):
     ymed = y[inicio]/2
@@ -120,8 +100,11 @@ for i in t_max_1b:
 
 print('El ajuste de la gráfica 1.b fue: 0.181*exp(-0.0536t) + 0.00735')
 
-#Punto 1.c)
 
+
+#1c--------------------------------------------------------------------------
+
+import numpy as np
 from scipy.signal import find_peaks
 import random
 archivo = "OGLE-LMC-CEP-0001.dat"
@@ -144,13 +127,11 @@ with open(archivo, "r") as file:
                 
 promedio=np.mean(intensidad)
 intensidad_=np.array([i-promedio for i in intensidad])
-frecuencias_grafica_1c=np.linspace(0.01, 5,1000)
-transformada_1c=(np.array([Fourier(tiempo,intensidad_,f) for f in frecuencias_grafica_1c]))
+frecuencias_grafica_1c=np.linspace(0, 5,100000)
+transformada_1c=(np.array(np.abs([Fourier(tiempo,intensidad_,f) for f in frecuencias_grafica_1c])))
 
+frecuencia_real=frecuencias_grafica_1c[np.argmax(transformada_1c)]
+fase=np.array([(frecuencia_real*t)%(1) for t in tiempo])
 
-
-max=np.argmin(transformada_1c)
-print("1.c) f Nyquist: 0.35 MHz")
-print(f'La frecuencia de muestreo fue:{3.2592150167545757}')
-
-
+print(f"1.c) f Nyquist:  Hz")
+print(f'1.c) f true: {frecuencia_real}')
