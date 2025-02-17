@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 #Cargar datos
-manchas_sol = pd.read_csv("list_aavso-arssn_daily.txt", sep="\s+", skiprows=1)
+manchas_sol = pd.read_csv(r"Tarea_2\list_aavso-arssn_daily.txt", sep=r"\s+", skiprows=1)
         #Se pasa a fechas
 manchas_sol["Date"] = pd.to_datetime(manchas_sol[["Year", "Month", "Day"]])
 
