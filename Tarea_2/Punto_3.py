@@ -1,9 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
 #Cargar datos
-manchas_sol = np.loadtxt(r"Tarea_2\H_field.csv", skiprows=1, delimiter=",")
-manchas_sol = manchas_sol[:,1]
+manchas_sol = pd.read_csv(r"Tarea_2\list_aavso-arssn_daily.txt", sep=r"\s+", skiprows=1)
+        #Se pasa a fechas
+manchas_sol["Date"] = pd.to_datetime(manchas_sol[["Year", "Month", "Day"]])
+
+        #Escogemos hasta el 2010-01-01
+manchas_sol = manchas_sol[manchas_sol["Date"] <= pd.to_datetime("2010-01-01")]
+
+manchas_sol = manchas_sol["SSN"].to_numpy()
 fft_signal = np.fft.fft(manchas_sol) #transformada de furier rapida
 freq = np.fft.fftfreq(len(fft_signal)) #Fracuencias para cada punto
 #Defino varios alfas para el filtro gauseano
