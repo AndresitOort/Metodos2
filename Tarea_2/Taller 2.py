@@ -179,7 +179,7 @@ modulos_fft = np.mod(frec_real*t, 1)
 
 #Le aplicamos ft
 f_list = np.linspace(0,10,500)
-fourier_implemented = Fourier(t, h, f_list)
+fourier_implemented = np.array([Fourier(t, h, f) for f in f_list])
 amplitud_implemented  = np.abs(fourier_implemented)
 
 indice_frec_real = np.argmax(amplitud_implemented)
