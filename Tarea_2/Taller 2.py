@@ -1,8 +1,22 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from numpy.typing import NDArray
 
 
-
+def datos_prueba(t_max:float, dt:float, amplitudes:NDArray[float],
+  frecuencias:NDArray[float], ruido:float=0.0) -> NDArray[float]:
+  ts = np.arange(0.,t_max,dt)
+  ys = np.zeros_like(ts,dtype=float)
+  for A,f in zip(amplitudes,frecuencias):
+    ys += A*np.sin(2*np.pi*f*ts)
+  ys += np.random.normal(loc=0,size=len(ys),scale=ruido) if ruido else 0
+  return ts,ys
 
 #1a---------------------------------------------------------------------------------
+
+def Fourier(t:NDArray[float], y:NDArray[float], f:float) -> complex:
+  FFT = np.sum(np.array([a*np.exp((-2*np.pi*f*p)*1j) for a,p in zip(y,t)]))
+  return FFT
 
 t_max=15
 d_t=0.1
@@ -127,11 +141,11 @@ with open(archivo, "r") as file:
                 
 promedio=np.mean(intensidad)
 intensidad_=np.array([i-promedio for i in intensidad])
-frecuencias_grafica_1c=np.linspace(0, 5,100000)
+frecuencias_grafica_1c=np.linspace(0, 5,100)
 transformada_1c=(np.array(np.abs([Fourier(tiempo,intensidad_,f) for f in frecuencias_grafica_1c])))
 
 frecuencia_real=frecuencias_grafica_1c[np.argmax(transformada_1c)]
 fase=np.array([(frecuencia_real*t)%(1) for t in tiempo])
 
-print(f"1.c) f Nyquist:  Hz")
-print(f'1.c) f true: {frecuencia_real}')
+print(f"1.c) f Nyquist: 0.35 MHz Hz")
+print(f'1.c) f true: {frecuencia_real} Hz')
