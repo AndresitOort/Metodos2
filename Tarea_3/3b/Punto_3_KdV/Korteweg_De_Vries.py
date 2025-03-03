@@ -60,7 +60,7 @@ solucion = evolucion_kdv(u, dx, dt, Nt, alpha)
 
 #La imágen ya está guardada en esta carpeta
 
-# Visualización del resultado
+'''# Visualización del resultado
 plt.figure(figsize=(20, 5))
 plt.imshow(solucion.T, aspect='auto', cmap='inferno', origin='lower',
            extent=[0, Tmax, 0, L])
@@ -69,10 +69,10 @@ plt.xlabel('Tiempo')
 plt.ylabel('Espacio')
 plt.title('Evolución de la ecuación KdV')
 plt.savefig('3a_Convergencia.pdf')
-plt.show()
+plt.show()'''
 
 #La animación ya está guardada en esta carpeta
-# Crear animación
+'''# Crear animación
 fig, ax = plt.subplots(figsize=(8, 5))
 line, = ax.plot(x, solucion[0], color='C0')
 ax.set_xlim(0, L)
@@ -93,7 +93,7 @@ ani = animation.FuncAnimation(fig, update, frames=num_frames, interval=interval,
 
 # Guardar la animación como mp4
 ani.save('3.a.mp4', writer='ffmpeg', fps=30)
-
+'''
 def calcular_cantidades_conservadas(solucion, dx, alpha):
     n_gauss = 6  # Número de puntos de cuadratura
     xi, wi = roots_legendre(n_gauss)  # Nodos y pesos de Gauss-Legendre
@@ -151,7 +151,7 @@ axs[2].set_xlabel('Tiempo')
 axs[2].grid()
 
 #Las gráficas ya están guardadas como '3.b.pdf' dentro de esta carpeta
-plt.tight_layout()
+'''plt.tight_layout()
 plt.savefig('3.b.pdf')
-plt.show()
+plt.show()'''
 
