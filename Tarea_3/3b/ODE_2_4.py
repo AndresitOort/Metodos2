@@ -64,8 +64,8 @@ else:
     P_sim = np.nan  # Si no hay suficiente precisión, no se calcula
 
 # Convertir a attosegundos (h)
-P_teo_as = T_teo * 5.243e7
-P_sim_as = P_sim * 5.243e7
+P_teo_as = T_teo * 24.16
+P_sim_as = P_sim * 24.16
 
 # Imprimir resultado
 print(f"2.a) {{P_teo = {P_teo_as:.5f}; P_sim = {P_sim_as:.5f}}} attosegundos")
@@ -149,19 +149,7 @@ alpha = 1 / 137
 #Tenemos una función que nos pasa de [x0, y0, vx0, vy0] a [x1, y1, vx1, vy1].
 
 #Implementamos el Runge Kutta modificado. Para esto, primero, vemos los pasos del runge
-@njit
-def derivadas_larmor(t,y): #Como el runge kutta evalua en 4 puntos del intervalo, necesitamos que la aceleración también se evalúe
 
-    x, y, vx, vy, a = y
-
-    r = np.sqrt(x**2 + y**2)
-
-    ax = -x/np.abs(r**3)
-    ay = -y/np.abs(r**3)
-
-    a_m = np.sqrt(ax**2 + ay**2)
-
-    return np.array([vx,vy,ax,ay,a_m])
 @njit
 def runge_kutta4_larmor(f, y0, t):
     n = len(t)
@@ -181,7 +169,8 @@ def runge_kutta4_larmor(f, y0, t):
         v_temporal_norma = np.linalg.norm(v_temporal)
         v_temporal_unitario = v_temporal/v_temporal_norma
         #Asumimos que la aceleración que nos interesa es la asociada a la posición [x0, y0]
-        a_norm = y_coulomb[4]
+        a = fuerza_coulomb(np.array([y[i][0], y[i][1]]))
+        a_norm = np.linalg.norm(a)
         #Sacamos el factor de corrección
         factor = np.sqrt(max((v_temporal_norma**2)- ((4/3) * (alpha**3) * (a_norm**2) * dt),0))
         if factor>0:
@@ -196,26 +185,28 @@ def runge_kutta4_larmor(f, y0, t):
         #Nuestro vector queda de la forma  v_temporal_unitario*factor de corrección
     return y, indice_final
 
-t_max = 10000
-n_pasos = 100000
-y0 = np.append(y0, 0)
+t_max = 10000000
+n_pasos = 90000000
 t = np.linspace(0, t_max, n_pasos)
-y, indice_final = runge_kutta4_larmor(derivadas_larmor, y0, t)
+y, indice_final = runge_kutta4_larmor(derivadas, y0, t)
 
 # Extraer posiciones y velocidades
 x, y_pos, vx, vy = y[:, 0], y[:, 1], y[:, 2], y[:, 3]
-x = x[:indice_final]
+x = x[:indice_final:]
 y_pos = y_pos[:indice_final]
 vx = vx[:indice_final]
 vy = vy[:indice_final]
 
+#Sacamos las energías
+"""
 radio = np.sqrt(x**2 + y_pos**2)
 energia_cinetica = 0.5 * (vx**2 + vy**2)
 energia_potencial = -1 / radio
 energia_total = energia_cinetica + energia_potencial
+"""
 
 t_sol = t[:indice_final] 
-t_fall_as = t_sol[-1]* 5.23e+7
+t_fall_as = t_sol[-1]* 24.16
 print(f"2.b) {{t_fall = {t_fall_as:.5f}}} attosegundos")
 
 #Gráficas 
@@ -223,7 +214,6 @@ print(f"2.b) {{t_fall = {t_fall_as:.5f}}} attosegundos")
 #Animamos y guardamos las gráficas
 animar_orbita("2.b.animation.gif")
 
-#Creamos los pdfs:
 plt.figure(figsize=(6,6))
 plt.plot(x, y_pos, label="Órbita del electrón")
 plt.scatter(0, 0, color="red", label="Protón")
@@ -233,24 +223,25 @@ plt.axis("equal")
 plt.legend()
 plt.title("Órbita del electrón")
 plt.savefig("2.b.XY.pdf")
+plt.show()
 plt.close()
 
 # Graficar diagnósticos (2.b.diagnostics.pdf)
 fig, axs = plt.subplots(3, 1, figsize=(8,10))
 
-axs[0].plot(t_sol, energia_total[:indice_final], label="Energía Total")
+axs[0].plot(t_sol[::10000], energia_total[:indice_final:10000], label="Energía Total")
 axs[0].set_xlabel("Tiempo (u.t.)")
 axs[0].set_ylabel("Energía Total (Ha)")
 axs[0].legend()
 axs[0].grid()
 
-axs[1].plot(t_sol, energia_cinetica[:indice_final], label="Energía Cinética", color="orange")
+axs[1].plot(t_sol[::10000], energia_cinetica[:indice_final:10000], label="Energía Cinética", color="orange")
 axs[1].set_xlabel("Tiempo (u.t.)")
 axs[1].set_ylabel("Energía Cinética (Ha)")
 axs[1].legend()
 axs[1].grid()
 
-axs[2].plot(t_sol, radio[:indice_final], label="Radio", color="green")
+axs[2].plot(t_sol[::10000], radio[:indice_final:10000], label="Radio", color="green")
 axs[2].set_xlabel("Tiempo (u.t.)")
 axs[2].set_ylabel("Radio (Bohr)")
 axs[2].legend()
@@ -258,6 +249,7 @@ axs[2].grid()
 
 plt.tight_layout()
 plt.savefig("2.b.diagnostics.pdf")
+plt.show()
 plt.close()
 
 """
@@ -515,7 +507,7 @@ for i, (E_val, parity) in enumerate(all_eigs):
     amp = 0.4  # factor para que las oscilaciones se vean
     psi_offset = offset + amp*psi_sol
     plt.plot(x_sol, psi_offset, color=colors[i], label=f"{parity}, E={E_val:.3f}")
-
+"""
 plt.ylim(0, max(odd_eigs+even_eigs)+1)
 plt.xlim(-x_max, x_max)
 plt.xlabel("x")
@@ -525,4 +517,4 @@ plt.legend(loc="upper left", bbox_to_anchor=(1,1))
 plt.tight_layout()
 plt.savefig("4.pdf")
 plt.show()
-
+"""
