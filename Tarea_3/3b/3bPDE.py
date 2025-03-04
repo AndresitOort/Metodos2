@@ -16,38 +16,38 @@ def sor_iteration(phi, rho, X, Y, h, omega, max_iter, tol, phi_boundary):
                 if X[i, j]**2 + Y[i, j]**2 < 1:
                     phi_new = 0.25 * (phi[i+1, j] + phi[i-1, j] + phi[i, j+1] + phi[i, j-1] - h**2 * rho[i, j])
                     phi[i, j] = (1 - omega) * phi[i, j] + omega * phi_new
-        
+
         # Aplicar condición de frontera en el círculo unitario
         for i in prange(N):
             for j in prange(N):
                 if X[i, j]**2 + Y[i, j]**2 >= 1:
                     phi[i, j] = phi_boundary[i, j]
-        
+
         # Verificar convergencia con la traza de la diferencia
         if np.trace(np.abs(phi - phi_old)) < tol:
             break
     return phi
 
-def poisson_solver(N=1000, tol=1e-4, max_iter=15000, omega=1.9):
+def poisson_solver(N=300, tol=1e-4, max_iter=15000, omega=1.9):
     L = 1.01  # Dominio ligeramente más grande que el círculo unitario
     h = 2 * L / (N - 1)  # Tamaño del paso
     x = np.linspace(-L, L, N)
     y = np.linspace(-L, L, N)
     X, Y = np.meshgrid(x, y)
-    
+
     # Inicializar la solución con valores aleatorios dentro del dominio
     phi = np.random.rand(N, N)  # Condición inicial aleatoria
-    
+
     # Definir la densidad de carga
     rho = np.where(X**2 + Y**2 < 1, -X-Y, 0)
-    
+
     # Aplicar condición de frontera en el círculo unitario
     theta = np.arctan2(Y, X)
     phi_boundary = np.sin(7 * theta)
-    
+
     # Ejecutar iteraciones con Numba
     phi = sor_iteration(phi, rho, X, Y, h, omega, max_iter, tol, phi_boundary)
-    
+
     return X, Y, phi, phi_boundary
 
 # Resolver el problema
@@ -75,12 +75,12 @@ X, Y, phi, phi_boundary = poisson_solver()
 # Logística
 L = 2
 c = 0.1
-N_x = 150  
+N_x = 150
 Nt = 10
 
-dx = L / N_x  
+dx = L / N_x
 dt = 1 / Nt
-Courant = c * dt / dx  
+Courant = c * dt / dx
 
 lista_x = np.linspace(0, L, N_x)
 
@@ -137,9 +137,9 @@ def siguiente_Dirichlet(frame):
     global u_anterior_dirichlet, u_dirichlet, u_nuevo_dirichlet
     for i in range(1, N_x - 1):
         u_nuevo_dirichlet[i] = 2 * u_dirichlet[i] - u_anterior_dirichlet[i] + Courant**2 * (u_dirichlet[i+1] - 2*u_dirichlet[i] + u_dirichlet[i-1])
-    
+
     #Condiciones de fonrtera Dirichlet
-    u_nuevo_dirichlet[0], u_nuevo_dirichlet[-1] = 0, 0  
+    u_nuevo_dirichlet[0], u_nuevo_dirichlet[-1] = 0, 0
     u_anterior_dirichlet, u_dirichlet = u_dirichlet, u_nuevo_dirichlet.copy()
     line_dirichlet.set_ydata(u_dirichlet)
     return line_dirichlet,
@@ -151,11 +151,11 @@ def siguiente_newmann(frame):
     global u_anterior_newmann, u_newmann, u_nuevo_newmann
     for i in range(1, N_x - 1):
         u_nuevo_newmann[i] = 2 * u_newmann[i] - u_anterior_newmann[i] + Courant**2 * (u_newmann[i+1] - 2*u_newmann[i] + u_newmann[i-1])
-        
-    #Condiciones de frontera newmann    
-    u_nuevo_newmann[0] = u_nuevo_newmann[1]  
+
+    #Condiciones de frontera newmann
+    u_nuevo_newmann[0] = u_nuevo_newmann[1]
     u_nuevo_newmann[-1] = u_nuevo_newmann[-2]
-    
+
     u_anterior_newmann, u_newmann = u_newmann, u_nuevo_newmann.copy()
     line_newman.set_ydata(u_newmann)
     return line_newman,
@@ -167,9 +167,9 @@ def siguiente_periodica(frame):
     global u_anterior_periodica, u_periodica, u_nuevo_periodica
     for i in range(1, N_x - 1):
         u_nuevo_periodica[i] = 2 * u_periodica[i] - u_anterior_periodica[i] + Courant**2 * (u_periodica[i+1] - 2*u_periodica[i] + u_periodica[i-1])
-    
+
     #Condiciones de frontera periódica
-    u_nuevo_periodica[0] = u_nuevo_periodica[-1]  
+    u_nuevo_periodica[0] = u_nuevo_periodica[-1]
     u_anterior_periodica, u_periodica = u_periodica, u_nuevo_periodica.copy()
     line_periodica.set_ydata(u_periodica)
     return line_periodica,
@@ -180,9 +180,9 @@ def actualizar_animacion(frame):
     siguiente_Dirichlet()
     siguiente_newmann()
     siguiente_periodica()
-    
 
-    
+
+
     return line_dirichlet, line_newman, line_periodica
 
 '''# Crear la animación
@@ -195,12 +195,12 @@ anim.save("animacion_ondas.mp4", writer=writer)
 plt.show()'''
 
 
-ani_dirichlet=animation.FuncAnimation(fig, siguiente_Dirichlet, frames=Nt, interval=20, blit=False)
-ani_newmann = animation.FuncAnimation(fig, siguiente_newmann, frames=Nt, interval=20, blit=False)
-ani_periodica = animation.FuncAnimation(fig, siguiente_periodica, frames=Nt, interval=20, blit=False)
+# ani_dirichlet=animation.FuncAnimation(fig, siguiente_Dirichlet, frames=Nt, interval=20, blit=False)
+# ani_newmann = animation.FuncAnimation(fig, siguiente_newmann, frames=Nt, interval=20, blit=False)
+# ani_periodica = animation.FuncAnimation(fig, siguiente_periodica, frames=Nt, interval=20, blit=False)
 
-plt.tight_layout()
-plt.show()
+# plt.tight_layout()
+# plt.show()
 
 #------------------------------------------------------------------------- Punto 3 --------------------------------------------------------- #
 
@@ -209,53 +209,53 @@ plt.show()
 L = 2.0  # Longitud del dominio
 N = 200  # La cantidad de puntos espaciales que consideraremos
 dx = L / N  # Paso espacial
-dt = 0.0001  # Paso temporal -> El paso temporal debe ser lo suficientemente pequeño para evitar 
+dt = 0.0001  # Paso temporal -> El paso temporal debe ser lo suficientemente pequeño para evitar
              # que la solución diverja.
-             
+
 Tmax = 2  # Tiempo total
 Nt = int(Tmax / dt)  # Número de pasos de tiempo -> La cantidad de pasos temporales que tendremos para
                      # el tiempo de simulación.
-                     
+
 alpha = 0.022  # Coeficiente de dispersión
 
 # Inicialización de la malla
 x = np.linspace(0, L, N, endpoint=False)
-u = np.cos(np.pi * x)  # Condición inicial. 
+u = np.cos(np.pi * x)  # Condición inicial.
 
 # Función para iterar usando el esquema numérico
 @njit
 def evolucion_kdv(u, dx, dt, Nt, alpha):
     Nx = len(u)
     u_hist = np.zeros((Nt, Nx)) # Creamos una malla de 0's con con Nt filas y Nx columnas
-    u_hist[0] = u.copy() # Guardamos para para la fila t=0 nuestra condición inicial u ya definida. 
-    
+    u_hist[0] = u.copy() # Guardamos para para la fila t=0 nuestra condición inicial u ya definida.
+
     # Primer paso con esquema modificado
     u_next = np.zeros_like(u) # Creamos un array de 0's con la misma longitud de u.
     for i in range(Nx): # Recorremos las columnas de una fila temporal
         u_next[i] = u[i] - (dt / (3 * dx)) * ( (u[np.mod(i+1, Nx)] + u[i] + u[np.mod(i-1, Nx)]) *
                                                (u[np.mod(i+1, Nx)] - u[np.mod(i-1, Nx)] ) ) \
-                          - (alpha**2) * (dt / (dx**3)) * (u[np.mod(i+2, Nx)] - 2 * u[np.mod(i+1, Nx)] 
+                          - (alpha**2) * (dt / (dx**3)) * (u[np.mod(i+2, Nx)] - 2 * u[np.mod(i+1, Nx)]
                                                           + 2 * u[np.mod(i-1, Nx)] - u[np.mod(i-2, Nx)] )
-    
+
     u_hist[1] = u_next.copy() # Habiendo hecho esto, tenemos 2 puntos temporales donde hemos evolucionadio las
                               # Ecucaiones de KdV, con ello podemos simular los siguientes según el método del paper.
 
     # Iteraciones en el tiempo usando la ecuación del paper
-    for t in range(1, Nt-1): # Como las condicones temporales no son periódicas, entonces hacemos la simulación 
+    for t in range(1, Nt-1): # Como las condicones temporales no son periódicas, entonces hacemos la simulación
                              # temporal dentro de la malla creada sin topar con los bordes.
         u_new = np.zeros_like(u)
         for i in range(Nx):
             u_new[i] = u_hist[t-1, i] - (dt / (3 * dx)) * ( (u_hist[t, np.mod(i+1, Nx)] + u_hist[t, i] + u_hist[t, np.mod(i-1, Nx)]) *
                                                             (u_hist[t, np.mod(i+1, Nx)] - u_hist[t, np.mod(i-1, Nx)] ) ) \
-                              - (alpha**2) * (dt / (dx**3)) * (u_hist[t, np.mod(i+2, Nx)] - 2 * u_hist[t, np.mod(i+1, Nx)] 
+                              - (alpha**2) * (dt / (dx**3)) * (u_hist[t, np.mod(i+2, Nx)] - 2 * u_hist[t, np.mod(i+1, Nx)]
                                                               + 2 * u_hist[t, np.mod(i-1, Nx)] - u_hist[t, np.mod(i-2, Nx)] )
-        
+
         u_hist[t+1] = u_new.copy()
 
     return u_hist
 
 # Ejecutar la simulación
-solucion = evolucion_kdv(u, dx, dt, Nt, alpha)
+# solucion = evolucion_kdv(u, dx, dt, Nt, alpha)
 
 #La imágen ya está guardada en esta carpeta
 # Visualización de la convergencia de las soluciones
@@ -309,18 +309,18 @@ def calcular_cantidades_conservadas(solucion, dx, alpha):
         integral_masa = 0
         integral_momento = 0
         integral_energia = 0
-        
+
         for i in range(N - 1):
             x_i = x[i]
             x_f = x[i + 1]
             x_gauss = x_i + (x_f - x_i) * xi  # Mapeo de nodos al subintervalo
             u_gauss = np.interp(x_gauss, x, solucion[t])  # Evaluar u en nodos
-            
+
             integral_masa += np.sum(wi * u_gauss) * (x_f - x_i)
             integral_momento += np.sum(wi * 0.5 * u_gauss**2) * (x_f - x_i)
             derivada_u = np.gradient(u_gauss, x_gauss)
             integral_energia += np.sum(wi * ((u_gauss**3) / 3 - (alpha**2 / 2) * derivada_u**2)) * (x_f - x_i)
-        
+
         masa[t] = integral_masa
         momento[t] = integral_momento
         energia[t] = integral_energia
@@ -328,28 +328,28 @@ def calcular_cantidades_conservadas(solucion, dx, alpha):
     return masa, momento, energia
 
 # Ejecutar la simulación
-solucion = evolucion_kdv(u, dx, dt, Nt, alpha)
+# solucion = evolucion_kdv(u, dx, dt, Nt, alpha)
 
 # Calcular las cantidades conservadas
 masa, momento, energia = calcular_cantidades_conservadas(solucion, dx, alpha)
 
 # Graficar cantidades conservadas
-fig, axs = plt.subplots(3, 1, figsize=(8, 10))
+# fig, axs = plt.subplots(3, 1, figsize=(8, 10))
 
-t_vals = np.linspace(0, Tmax, len(masa))
+# t_vals = np.linspace(0, Tmax, len(masa))
 
-axs[0].plot(t_vals, masa, label='Masa')
-axs[0].set_ylabel('Masa')
-axs[0].grid()
+# axs[0].plot(t_vals, masa, label='Masa')
+# axs[0].set_ylabel('Masa')
+# axs[0].grid()
 
-axs[1].plot(t_vals, momento, label='Momento')
-axs[1].set_ylabel('Momento')
-axs[1].grid()
+# axs[1].plot(t_vals, momento, label='Momento')
+# axs[1].set_ylabel('Momento')
+# axs[1].grid()
 
-axs[2].plot(t_vals, energia, label='Energía')
-axs[2].set_ylabel('Energía')
-axs[2].set_xlabel('Tiempo')
-axs[2].grid()
+# axs[2].plot(t_vals, energia, label='Energía')
+# axs[2].set_ylabel('Energía')
+# axs[2].set_xlabel('Tiempo')
+# axs[2].grid()
 
 #Las gráficas ya están guardadas como '3.b.pdf' dentro de esta carpeta
 '''plt.tight_layout()
@@ -451,7 +451,7 @@ def on_key(event):
 
 fig.canvas.mpl_connect("key_press_event", on_key)
 
-ani = animation.FuncAnimation(fig, update, frames=int(T / dt), interval=20, blit=False)
+# ani = animation.FuncAnimation(fig, update, frames=int(T / dt), interval=20, blit=False)
 
 # Guardar la animación en formato MP4
 # writer = animation.FFMpegWriter(fps=90, metadata={"title": "Simulación de Ondas"})
