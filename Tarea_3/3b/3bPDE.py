@@ -195,12 +195,7 @@ anim.save("animacion_ondas.mp4", writer=writer)
 plt.show()'''
 
 
-ani_dirichlet=animation.FuncAnimation(fig, siguiente_Dirichlet, frames=Nt, interval=20, blit=False)
-ani_newmann = animation.FuncAnimation(fig, siguiente_newmann, frames=Nt, interval=20, blit=False)
-ani_periodica = animation.FuncAnimation(fig, siguiente_periodica, frames=Nt, interval=20, blit=False)
 
-plt.tight_layout()
-plt.show()
 
 #------------------------------------------------------------------------- Punto 3 --------------------------------------------------------- #
 

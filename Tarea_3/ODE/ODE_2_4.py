@@ -5,6 +5,116 @@ import matplotlib.animation as animation
 from scipy.integrate import solve_ivp
 from scipy.optimize import brentq
 
+#-----------------------------------------------------------------------PUNTO 1----------------------------------------
+
+g = 9.773
+m = 10
+v_0 = 10
+dt = 0.001
+N_MAX = 10000  
+
+@njit
+def ODEX(t, Y, b):
+    x, y, vx, vy = Y
+    v = np.hypot(vx**2, vy**2)
+    dvx_dt = - (b/m) * vx * v
+    dvy_dt = -g - (b/m) * vy * v
+    return np.array([vx, vy, dvx_dt, dvy_dt])
+
+@njit
+def RK4(F, t0, Y0, dt, b):
+    t = t0
+    x_list = np.empty(N_MAX)
+    y_list = np.empty(N_MAX)
+    wrea = 0
+
+    x_list[0], y_list[0] = Y0[0], Y0[1]
+    i = 0
+
+    while Y0[1] >= 0 and i < N_MAX - 1:
+        k1 = F(t, Y0, b)
+        k2 = F(t + dt / 2, Y0 + dt * k1 / 2, b)
+        k3 = F(t + dt / 2, Y0 + dt * k2 / 2, b)
+        k4 = F(t + dt, Y0 + dt * k3, b)
+
+        Y0n = Y0 + dt / 6 * (k1 + 2 * k2 + 2 * k3 + k4)
+
+        dx, dy = Y0n[0] - Y0[0], Y0n[1] - Y0[1]
+        ds = np.hypot(dx**2,dy**2)
+        mvs = np.hypot(Y0n[2]**2, Y0n[3]**2)
+        wrea += b * (mvs**2) * ds
+
+        x_list[i+1] = Y0n[0]
+        y_list[i+1] = Y0n[1]
+
+        Y0 = Y0n
+        t += dt
+        i += 1
+
+    return x_list[:i], y_list[:i], wrea
+
+def FBA(b):
+    angles = np.linspace(0, 90, 501)
+    best_angle = 0
+    max_range = 0
+
+    for angle in angles:
+        rad_angle = np.radians(angle)
+        v0x, v0y = v_0 * np.cos(rad_angle), v_0 * np.sin(rad_angle)
+        x, _, _ = RK4(ODEX, 0, np.array([0, 0, v0x, v0y]), dt, b)
+
+        if x[-1] > max_range:
+            max_range = x[-1]
+            best_angle = angle
+
+    fine_angles = np.linspace(best_angle - 0.15, best_angle + 0.15, 501)
+
+    for angle in fine_angles:
+        rad_angle = np.radians(angle)
+        v0x, v0y = v_0 * np.cos(rad_angle), v_0 * np.sin(rad_angle)
+        x, _, _ = RK4(ODEX, 0, np.array([0, 0, v0x, v0y]), dt, b)
+
+        if x[-1] > max_range:
+            max_range = x[-1]
+            best_angle = angle
+
+    hyperfine_angles = np.linspace(best_angle - 0.002, best_angle + 0.002, 501)
+
+    for angle in hyperfine_angles:
+        rad_angle = np.radians(angle)
+        v0x, v0y = v_0 * np.cos(rad_angle), v_0 * np.sin(rad_angle)
+        x, _, _ = RK4(ODEX, 0, np.array([0, 0, v0x, v0y]), dt, b)
+
+        if x[-1] > max_range:
+            max_range = x[-1]
+            best_angle = angle
+
+    return max_range, best_angle
+
+
+
+
+b = 0
+mr, ba = FBA(b)
+x, y, wrea = RK4(ODEX, 0, np.array([0, 0, v_0 * np.cos(np.radians(ba)), v_0 * np.sin(np.radians(ba))]), dt, b)
+
+print(f"El ángulo óptimo es {ba:.4f}°")
+print(f"Alcance máximo: {mr:.4f}")
+print(f"Energía disipada: {wrea:.4f}")
+
+beta = np.logspace(-3, np.log10(2), 100)
+thetam = np.zeros(len(beta))
+wream = np.zeros(len(beta))
+
+for i in range(len(beta)):
+    max_range, best_angle = FBA(beta[i]) 
+    thetam[i] = best_angle  
+
+    v0x, v0y = v_0 * np.cos(np.radians(best_angle)), v_0 * np.sin(np.radians(best_angle))
+    _, _, wrea = RK4(ODEX, 0, np.array([0, 0, v0x, v0y]), dt, beta[i])
+    wream[i] = wrea 
+
+
 #-----------------------------------------------------------------------------Punto 2.a
 
 @njit
@@ -115,7 +225,7 @@ lo que permite visualizar la evolución del sistema en el tiempo.
 """
 
 
-def animar_orbita(nombre_archivo):
+'''def animar_orbita(nombre_archivo):
     fig, ax = plt.subplots(figsize=(6, 6))
     ax.set_xlim(-1.2, 1.2)
     ax.set_ylim(-1.2, 1.2)
@@ -136,7 +246,7 @@ def animar_orbita(nombre_archivo):
     anim.save(nombre_archivo, writer=writer)
 
     plt.legend()
-    plt.close()
+    plt.close()'''
 
 # Ejecutar la simulación
 #animar_orbita("2.a.animation.gif")
@@ -253,6 +363,67 @@ plt.show()
 plt.close()
 
 """
+
+#--------------------------------------------------------------------PUNTO 3
+
+# Constantes del problema
+mu = 39.4234021  # UA^3 / Año^2
+alpha = 1.09778201e-8  # UA^2
+
+# Condiciones iniciales
+a = 0.38709893  # Semieje mayor (UA)
+e = 0.20563069  # Excentricidad
+x0 = a * (1 + e)
+y0 = 0
+vx0 = 0
+vy0 = np.sqrt(mu / a) * np.sqrt((1 - e) / (1 + e))
+
+# Definición del sistema de ecuaciones diferenciales con Numba
+@njit
+def equations(t, Y):
+    x, y, vx, vy = Y
+    r2 = x**2 + y**2
+    r = np.sqrt(r2)
+    factor = mu / (r2 * r) * (1 + alpha / r2)
+    ax = -factor * x
+    ay = -factor * y
+    return np.array([vx, vy, ax, ay])
+
+# Tiempo de simulación (10 años)
+t_span = (0, 10)
+t_eval = np.linspace(0, 10, 1000)
+
+# Resolver la ecuación diferencial con parámetros optimizados
+sol = solve_ivp(equations, t_span, [x0, y0, vx0, vy0], method='DOP853', t_eval=t_eval, rtol=1e-10, atol=1e-12)
+
+# Extraer soluciones
+x, y = sol.y[0], sol.y[1]
+t = sol.t
+
+# Calcular la distancia al Sol
+dist = np.sqrt(x**2 + y**2)
+
+# Detectar periastro usando derivada numérica
+periastro_indices = np.argwhere((dist[1:-1] < dist[:-2]) & (dist[1:-1] < dist[2:])).flatten() + 1
+
+# Calcular los ángulos en los puntos del periastro
+theta_periastro = np.arctan2(y[periastro_indices], x[periastro_indices])
+
+# Desenrollar manualmente los ángulos para evitar los saltos
+for i in range(1, len(theta_periastro)):
+    while theta_periastro[i] < theta_periastro[i-1]:
+        theta_periastro[i] += 2 * np.pi
+
+# Convertir a grados y luego a segundos de arco
+theta_periastro_arcsec = np.degrees(theta_periastro) * 3600
+
+# Ajuste lineal para determinar la precesión
+coef_periastro = np.polyfit(t[periastro_indices], theta_periastro_arcsec, 1)
+pendiente_periastro = coef_periastro[0] * 100  # En arcsec/siglo
+
+# Imprimir resultados
+print(f"Pendiente de la precesión del periastro: {pendiente_periastro:.4f} arcsec/siglo")
+
 
 #---------------------------------------------------------------------Punto 4
 
