@@ -9,7 +9,59 @@ from numba import njit
 from matplotlib.animation import FFMpegWriter
 import matplotlib.animation as animation
 
+#-------------------------------------------------------------------Punto 1-----------------------------------
+def funcion_generadora(x, n=10, a=4/5):
+    x = np.atleast_1d(x)  
+    k_values = np.arange(1, n + 1)[:, np.newaxis]  
+    return np.sum(np.exp(-k_values * (x - k_values) ** 2) / (k_values ** a), axis=0)
 
+def metropolis_hastings(iterations=500000, proposal_std=1.5):
+    samples = []
+    x = np.random.uniform(0, 10)  
+    
+    for _ in range(iterations):
+        x_new = x + np.random.normal(0, proposal_std)  
+        
+        if x_new < -10 or x_new > 20:  
+            continue
+        
+        g_x_new = funcion_generadora(x_new)
+        g_x = funcion_generadora(x)
+        
+        if g_x > 0 and g_x_new > 0 and np.random.rand() < g_x_new / g_x:
+            x = x_new  
+        
+        samples.append(x)
+    
+    return np.array(samples)
+
+samples = metropolis_hastings()
+
+# Guardar histograma
+# plt.figure(figsize=(8,6))
+# plt.hist(samples, bins=200, density=True, alpha=0.6, color='b')
+# plt.xlabel("x")
+# plt.ylabel("Frecuencia relativa")
+# plt.title("Histograma de muestras generadas por Metrópolis-Hastings")
+# plt.grid()
+# plt.savefig("1.a.pdf")
+# plt.close()
+
+
+def f_x(x):
+    return np.exp(-x**2)
+
+def estimar_A(samples):
+    fx_gx = f_x(samples) / funcion_generadora(samples)
+    A = np.sqrt(np.pi) * len(samples) / np.sum(fx_gx) 
+    incertidumbre = np.sqrt(np.var(fx_gx) / len(samples))
+    return A, incertidumbre
+
+# Calcular A e incertidumbre
+A_estimado, incertidumbre_A = estimar_A(samples)
+
+# Imprimir el resultado en el formato solicitado
+print(f"1.b) {A_estimado:.6f} ± {incertidumbre_A:.6f}")
 
 
 #-------------------------------------------------------------------Punto 2
