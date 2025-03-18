@@ -25,14 +25,14 @@ nueva_letra = np.random.choice(a,p=P.loc[s[-1]].values)
 
 print(nueva_letra)
 
-ruta_guardado = r"Tarea_4\\punto_4"
+ruta_guardado = r"Tarea_4"
 nombre_libro = "The Shadow Over Innsmouth.txt"
 nombre_limpio = "The Shadow Over Innsmouth cleaned.txt"
 
 ruta_libro_original = os.path.join(ruta_guardado, nombre_libro)
 ruta_libro_limpio = os.path.join(ruta_guardado, nombre_limpio)
 
-with open("Tarea_4\\punto_4\\words_alpha.txt", "r", encoding="utf-8") as f:
+with open("Tarea_4\\words_alpha.txt", "r", encoding="utf-8") as f:
     palabras_ingles = set(f.read().split())
 
 def limpiar_texto(texto):
