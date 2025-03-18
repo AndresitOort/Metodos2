@@ -10,6 +10,62 @@ from matplotlib.animation import FFMpegWriter
 import matplotlib.animation as animation
 
 
+
+
+#-------------------------------------------------------------------Punto 2
+
+# Logística
+D1 = D2 = 50  
+lambda_ = 670e-7  
+A = 0.4  
+a = 0.1  
+d=0.1
+N = 75000  # Número de muestras
+
+# rango de z
+z_vals = np.linspace(-0.4, 0.4, 100)  
+
+# muestras random x,y
+x_samples = np.random.uniform(-A/2, A/2, N)
+y_samples = np.concatenate([
+    np.random.uniform(-d/2, d/2, N//2),
+    np.random.uniform(d/2, d/2 + a, N//2)
+])
+
+#fases de la exponencial compleja
+phase_factor = (2 * np.pi / lambda_) * (D1 + D2)
+quad_phase_x = (np.pi / (lambda_ * D1)) * x_samples[:, None]**2
+quad_phase_y = (np.pi / (lambda_ * D1)) * y_samples[None, :]**2
+
+# Calcular la integral de camino de Feynman con optimización
+def feynman_intensity(z):
+    screen_phase = (np.pi / (lambda_ * D2)) * (z - y_samples)**2
+    phase = phase_factor + quad_phase_x - 2 * (np.pi / (lambda_ * D1)) * x_samples[:, None] * y_samples[None, :] + quad_phase_y + screen_phase
+    integral = np.sum(np.exp(1j * phase), axis=1)
+    return np.abs(np.sum(integral))**2 #magnitud del número complejo
+
+I_feynman = np.array([feynman_intensity(z) for z in z_vals])
+I_feynman /= I_feynman.max()  # Normalización
+
+# Modelo clásico
+theta = np.arctan(z_vals / D2)
+I_classic = (np.cos(np.pi * d * np.sin(theta) / lambda_)**2) * (np.sinc(a * np.sin(theta) / lambda_)**2)
+I_classic /= I_classic.max()  # Normalización
+
+# Graficar
+'''plt.figure(figsize=(8, 5))
+plt.plot(z_vals, I_feynman, label='Feynman', linestyle='dashed')
+plt.plot(z_vals, I_classic, label='Clásico')
+plt.xlabel("Posición z (cm)")
+plt.ylabel("Intensidad Normalizada")
+plt.legend()
+plt.title("Comparación de Intensidades - Modelo Clásico vs. Feynman")
+plt.grid()
+plt.show()'''
+
+
+
+
 #------------------------------------------------------------------Punto 3
 #Puntos Cambios realizados
 N = 150  # Tamaño de la malla
