@@ -115,7 +115,7 @@ resultados = {}
 for n in range(1, 26): 
     print(f"Procesando n={n}...")
     tabla_frecuencias = construir_tabla_frecuencias(texto, n)
-    texto_predicho = generar_texto(tabla_frecuencias, m=100000, n=n)
+    texto_predicho = generar_texto(tabla_frecuencias, m=1000000, n=n)
 
     ruta_salida = os.path.join(ruta_guardado, f"gen_text_n{n}.txt")
     with open(ruta_salida, "w", encoding="utf-8") as f:
