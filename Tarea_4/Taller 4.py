@@ -5,8 +5,69 @@ import unicodedata
 import os
 import random
 import matplotlib.pyplot as plt
-
 from numba import njit
+from matplotlib.animation import FFMpegWriter
+import matplotlib.animation as animation
+
+
+#------------------------------------------------------------------Punto 3
+#Puntos Cambios realizados
+N = 150  # Tamaño de la malla
+J = 0.2  # Interacción entre espines
+beta = 10  # Inverso de la temperatura
+num_frames = 500  # Número de frames en la animación
+iterations_per_frame = 400  # Iteraciones por frame
+total_iterations = num_frames * iterations_per_frame  # Iteraciones totales
+
+# Inicialización de la malla con valores aleatorios ±1
+spins = np.random.choice([-1, 1], size=(N, N))
+
+# Función para calcular el cambio de energía local ΔE
+def delta_energy(spins, i, j):
+    neighbors = (
+        spins[(i+1) % N, j] + spins[i-1, j] +
+        spins[i, (j+1) % N] + spins[i, j-1]
+    )
+    return 2 * J * spins[i, j] * neighbors
+
+
+def metropolis_step(spins, beta):
+    i, j = np.random.randint(0, N, size=2)  # Selecciona un espín aleatorio
+    dE = delta_energy(spins, i, j)
+
+    if dE <= 0 or np.random.rand() < np.exp(-beta * dE):
+        spins[i, j] *= -1  # Se acepta el cambio de espín
+
+
+fig, ax = plt.subplots(figsize=(6,6))
+im = ax.imshow(spins, cmap='gray', animated=True)
+
+def update(frame):
+    for _ in range(iterations_per_frame):  # Realizar múltiples iteraciones por frame
+        metropolis_step(spins, beta)
+    im.set_array(spins)
+    return [im]
+
+#ani = animation.FuncAnimation(fig, update, frames=num_frames, blit=True)
+
+# Guardar el video con FFmpeg
+#video_filename = "ising_model.mp4"
+#writer = FFMpegWriter(fps=30, bitrate=1800)
+#ani.save(video_filename, writer=writer, dpi=300)
+#plt.close(fig)
+
+# Mostrar el video en Google Colab
+#HTML(f"""
+#<video width="50%" controls>
+#  <source src="{video_filename}" type="video/mp4">
+#</video>
+#""")
+
+# Descargar el video al equipo local
+#from google.colab import files
+#files.download(video_filename)
+
+#------------------------------------------------------------------Punto 4
 
 s = "GTCTTAAAAGGCGCGGGTAAGGCCTTGTTCAACACTTGTCCCGTA"
 
